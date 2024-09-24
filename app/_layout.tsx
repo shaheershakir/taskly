@@ -20,6 +20,7 @@ export default function Layout() {
         name="counter"
         options={{
           title: "counter",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <FeatherClock name="clock" size={size} color={color} />
           ),
