@@ -1,4 +1,11 @@
-import { StyleSheet, TextInput, ScrollView, FlatList } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  FlatList,
+  View,
+  Text,
+} from "react-native";
 import { ShoppingListItem } from "../components/ShoppingListItem";
 import { theme } from "../theme";
 import { useState } from "react";
@@ -8,19 +15,8 @@ type ShoppingListItemType = {
   name: string;
 };
 
-const initialList: ShoppingListItemType[] = [
-  { id: "1", name: "coffee" },
-  { id: "2", name: "Tea" },
-  { id: "3", name: "Milk" },
-];
-
-const testData = new Array(1000)
-  .fill(null)
-  .map((item, index) => ({ id: String(index), name: String(index) }));
-
 export default function App() {
-  const [shoppingList, setShoppingList] =
-    useState<ShoppingListItemType[]>(initialList);
+  const [shoppingList, setShoppingList] = useState<ShoppingListItemType[]>([]);
   const [value, setValue] = useState("");
 
   const handlleSubmit = () => {
@@ -35,11 +31,16 @@ export default function App() {
   };
   return (
     <FlatList
-      data={testData}
+      data={shoppingList}
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
       stickyHeaderIndices={[0]}
-      ListHeaderComponent={() => (
+      ListEmptyComponent={
+        <View style={styles.listEmptyContainer}>
+          <Text>Your Shopping List is Empty</Text>
+        </View>
+      }
+      ListHeaderComponent={
         <TextInput
           placeholder="Eg. Coffee"
           style={styles.textInput}
@@ -48,11 +49,8 @@ export default function App() {
           returnKeyType="done"
           onSubmitEditing={handlleSubmit}
         />
-      )}
-      renderItem={({ item }) => {
-        console.log(item);
-        return <ShoppingListItem name={item.name} />;
-      }}
+      }
+      renderItem={({ item }) => <ShoppingListItem name={item.name} />}
     />
   );
 }
@@ -75,5 +73,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     borderRadius: 50,
     backgroundColor: theme.colorWhite,
+  },
+  listEmptyContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 18,
   },
 });
