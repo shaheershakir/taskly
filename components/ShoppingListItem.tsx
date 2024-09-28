@@ -55,6 +55,7 @@ export function ShoppingListItem({
           color={isCompleted ? theme.colorGrey : theme.colorCerulean}
         />
         <Text
+          numberOfLines={1}
           style={[
             styles.itemText,
             isCompleted ? styles.completedText : undefined,
@@ -104,5 +105,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
     alignItems: "center",
+    gap: 8,
   },
 });
