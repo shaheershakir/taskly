@@ -1,5 +1,12 @@
 import { useRouter } from "expo-router";
-import { Text, View, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { theme } from "../../theme";
 import { registerForPushNotificationsAsync } from "../../utils/registerForPushNotificationsAsync";
 import * as Device from "expo-device";
@@ -12,9 +19,9 @@ import { getFromStorage, saveToStorage } from "../../utils/storage";
 
 const frequency = 10 * 1000;
 
-const countdownStorageKey = "taskly-coundown";
+export const countdownStorageKey = "taskly-coundown";
 
-type PersistedCountdownState = {
+export type PersistedCountdownState = {
   currentNotificationId: string | undefined;
   completedAtTimestamps: number[];
 };
@@ -26,6 +33,7 @@ type CountdownStatus = {
 };
 
 export default function CounterScreen() {
+  const [isLoading, setIsLoading] = useState(true);
   const [coundownstate, setCoundownstate] = useState<PersistedCountdownState>();
   const [status, setStatus] = useState<CountdownStatus>({
     isOverDue: false,
@@ -47,6 +55,9 @@ export default function CounterScreen() {
       const timestamp = lastCompletedTimestamp
         ? lastCompletedTimestamp + frequency
         : Date.now();
+      if (lastCompletedTimestamp) {
+        setIsLoading(false);
+      }
       const isOverDue = isBefore(timestamp, Date.now());
       const distance = intervalToDuration(
         isOverDue
@@ -58,7 +69,7 @@ export default function CounterScreen() {
     return () => {
       clearInterval(intervelId);
     };
-  }, []);
+  }, [lastCompletedTimestamp]);
 
   const scheduleNotification = async () => {
     let pushNotificationId;
@@ -94,6 +105,15 @@ export default function CounterScreen() {
     setCoundownstate(newCoundownState);
     await saveToStorage(countdownStorageKey, newCoundownState);
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.activityIndicatorContainer}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
   return (
     <View
       style={[
@@ -171,5 +191,11 @@ const styles = StyleSheet.create({
   },
   whiteText: {
     color: theme.colorWhite,
+  },
+  activityIndicatorContainer: {
+    backgroundColor: theme.colorWhite,
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
   },
 });
